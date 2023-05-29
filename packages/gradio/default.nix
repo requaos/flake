@@ -45,11 +45,12 @@
 , hatch-fancy-pypi-readme
 , pytestCheckHook
 , websockets
+, pythonRelaxDepsHook
 }:
 
 buildPythonPackage rec {
   pname = "gradio";
-  version = "3.32.0";
+  version = "3.31.0";
   disabled = pythonOlder "3.7";
   format = "pyproject";
 
@@ -57,13 +58,15 @@ buildPythonPackage rec {
   # and its releases are also more frequent than github tags
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-vN2XvM/+XdkEV00GDPaFCCrHJhpRFkuwhU6WSPvUXsE=";
+    sha256 = "sha256-4YIhhj64daLOfOqmzsJC8SaNym/OOwe/5fpb0BA8N90=";
   };
 
+  pythonRelaxDeps = [ "mdit-py-plugins" ];
   nativeBuildInputs = [
     hatchling
     hatch-requirements-txt
     hatch-fancy-pypi-readme
+    pythonRelaxDepsHook
   ];
   propagatedBuildInputs = [
     altair
