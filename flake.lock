@@ -208,16 +208,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1677932085,
-        "narHash": "sha256-+AB4dYllWig8iO6vAiGGYl0NEgmMgGHpy9gzWJ3322g=",
+        "lastModified": 1685325175,
+        "narHash": "sha256-QAKsxoePrMUoHRYpfbxBeVXDKoRJ8S864/UMjML+JiU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3c5319ad3aa51551182ac82ea17ab1c6b0f0df89",
+        "rev": "4295779fbaacb7158d5f32c4aa2740ef7b56d91b",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "master",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -258,11 +258,11 @@
     "textgen-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1684866001,
-        "narHash": "sha256-Iuwpip/YiUbLP/6w9fJ8By7dSqTmcnSEPKVw0gUtfis=",
+        "lastModified": 1685326210,
+        "narHash": "sha256-Opxku8sZJ1+LqGacVHsUk4Hxu/ukRPCnYxlYGDloTYU=",
         "owner": "oobabooga",
         "repo": "text-generation-webui",
-        "rev": "fb6a00f4e53f858214fb7d64c19cb7b7a7bcd99c",
+        "rev": "60ae80cf28608fed6b2eaf128abd397770384dd2",
         "type": "github"
       },
       "original": {

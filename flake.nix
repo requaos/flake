@@ -8,7 +8,7 @@
 
   inputs = {
     nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
+      url = "github:NixOS/nixpkgs/master";
     };
     invokeai-src = {
       url = "github:invoke-ai/InvokeAI/v2.3.1.post2";

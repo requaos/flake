@@ -8,6 +8,7 @@
 , tmpDir ? "/tmp/nix-textgen"
 , stateDir ? "$HOME/.textgen/state"
 , libdrm
+, cudaPackages
 }:
 let
   patchedSrc = runCommand "textgen-patchedSrc" { } ''
@@ -15,6 +16,7 @@ let
     cd src
     rm -rf models loras cache
     mv ./prompts ./_prompts
+    mv ./characters ./_characters
     cd -
     substituteInPlace ./src/server.py \
       --replace "Path('presets" "Path('$out/presets" \
@@ -29,15 +31,36 @@ let
     substituteInPlace ./src/download-model.py \
       --replace "=args.output" "='$out/models/'" \
       --replace "base_folder=None" "base_folder='$out/models/'"
+    substituteInPlace ./src/modules/html_generator.py \
+      --replace "../css" "$out/css" \
+      --replace 'Path(__file__).resolve().parent / ' "" \
+      --replace "Path(f'css" "Path(f'$out/css"
+    substituteInPlace ./src/modules/utils.py \
+      --replace "Path('css" "Path('$out/css" \
+      --replace "Path('characters" "Path('$out/characters" \
+      --replace "characters/" "$out/characters/"
+    substituteInPlace ./src/modules/chat.py \
+      --replace "folder = 'characters'" "folder = '$out/characters'" \
+      --replace "Path('characters" "Path('$out/characters" \
+      --replace "characters/" "$out/characters/"
     mv ./src $out
     ln -s ${tmpDir}/models/ $out/models
     ln -s ${tmpDir}/loras/ $out/loras
     ln -s ${tmpDir}/cache/ $out/cache
     ln -s ${tmpDir}/prompts/ $out/prompts
+    ln -s ${tmpDir}/characters/ $out/characters
   '';
   textgenPython = aipython3.python.withPackages (_: with aipython3; [
     accelerate
-    # bitsandbytes
+    (bitsandbytes.overrideAttrs (old: {
+      propagatedBuildInputs = old.propagatedBuildInputs ++ (with aipython3; [ scipy ]);
+      src = pkgs.fetchFromGitHub {
+        owner = "TimDettmers";
+        repo = "bitsandbytes";
+        rev = "0f40fa3f0a198802056e29ba183eaabc6751d565";
+        hash = "sha256-AzIACOjGjwdOZMCwLLGqIdAio4oxT9risRrqEpUQ6YQ=";
+      };
+    }))
     colorama
     datasets
     flexgen
@@ -55,6 +78,8 @@ let
     sentencepiece
     tqdm
     transformers
+    autogptq
+    torch
   ]);
 
   # See note about consumer GPUs:
@@ -78,17 +103,20 @@ in
   fi
   rm -rf ${tmpDir}
   mkdir -p ${tmpDir}
-  mkdir -p ${stateDir}/models ${stateDir}/cache ${stateDir}/loras ${stateDir}/prompts
-  cp --no-preserve=mode ${patchedSrc}/_prompts/* ${stateDir}/prompts/
+  mkdir -p ${stateDir}/models ${stateDir}/cache ${stateDir}/loras ${stateDir}/prompts ${stateDir}/characters
+  cp -r --no-preserve=mode ${patchedSrc}/_prompts/* ${stateDir}/prompts/
+  cp -r --no-preserve=mode ${patchedSrc}/_characters/* ${stateDir}/characters
   ln -s ${stateDir}/models/ ${tmpDir}/models
   ln -s ${stateDir}/loras/ ${tmpDir}/loras
   ln -s ${stateDir}/cache/ ${tmpDir}/cache
   ln -s ${stateDir}/prompts/ ${tmpDir}/prompts
+  ln -s ${stateDir}/characters/ ${tmpDir}/characters
   ${lib.optionalString (aipython3.torch.rocmSupport or false) rocmInit}
+  export LD_LIBRARY_PATH=/run/opengl-driver/lib:${cudaPackages.cudatoolkit}/lib
   ${textgenPython}/bin/python ${patchedSrc}/server.py $@ \
     --model-dir ${stateDir}/models/ \
     --lora-dir ${stateDir}/loras/ \
-    --disk-cache-dir ${stateDir}/cache/
+
 '').overrideAttrs
   (_: {
     meta = {

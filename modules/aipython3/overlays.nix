@@ -22,27 +22,27 @@ pkgs: {
           };
           propagatedBuildInputs = old.propagatedBuildInputs ++ [ prev.fsspec ];
         });
-      tokenizers =
-        let
-          inherit (prev.pkgs) fetchFromGitHub rustPlatform;
-          pname = "tokenizers";
-          version = "0.13.2";
-          sourceRoot = "source/bindings/python";
-        in
-        prev.tokenizers.overridePythonAttrs (_: rec {
-          src = fetchFromGitHub {
-            owner = "huggingface";
-            repo = pname;
-            rev = "python-v${version}";
-            hash = "sha256-DE0DA9U9CVQH5dp8BWgeXb+RdkXXOH2dZ9NrPGScDsQ=";
-          };
-
-          cargoDeps = rustPlatform.fetchCargoTarball {
-            inherit src sourceRoot;
-            name = "${pname}-${version}";
-            hash = "sha256-G6BQpnGucqmbmADC47xV0Jm9JqYob7416FFHl8rRWh4=";
-          };
-        });
+#      tokenizers =
+#        let
+#          inherit (prev.pkgs) fetchFromGitHub rustPlatform;
+#          pname = "tokenizers";
+#          version = "0.13.2";
+#          sourceRoot = "source/bindings/python";
+#        in
+#        prev.tokenizers.overridePythonAttrs (_: rec {
+#          src = fetchFromGitHub {
+#            owner = "huggingface";
+#            repo = pname;
+#            rev = "python-v${version}";
+#            hash = "sha256-DE0DA9U9CVQH5dp8BWgeXb+RdkXXOH2dZ9NrPGScDsQ=";
+#          };
+#
+#          cargoDeps = rustPlatform.fetchCargoTarball {
+#            inherit src sourceRoot;
+#            name = "${pname}-${version}";
+#            hash = "sha256-G6BQpnGucqmbmADC47xV0Jm9JqYob7416FFHl8rRWh4=";
+#          };
+#        });
 
       transformers =
         let
@@ -118,7 +118,7 @@ pkgs: {
       opencv-python-headless = final.opencv-python;
       opencv-python = final.opencv4;
 
-      safetensors = callPackage ../../packages/safetensors { };
+#      safetensors = callPackage ../../packages/safetensors { };
       compel = callPackage ../../packages/compel { };
       apispec-webframeworks = callPackage ../../packages/apispec-webframeworks { };
       pydeprecate = callPackage ../../packages/pydeprecate { };
@@ -132,7 +132,7 @@ pkgs: {
       realesrgan = rmCallPackage ../../packages/realesrgan { };
       codeformer = callPackage ../../packages/codeformer { };
       clipseg = rmCallPackage ../../packages/clipseg { };
-      kornia = callPackage ../../packages/kornia { };
+#      kornia = callPackage ../../packages/kornia { };
       lpips = callPackage ../../packages/lpips { };
       ffmpy = callPackage ../../packages/ffmpy { };
       picklescan = callPackage ../../packages/picklescan { };
@@ -146,20 +146,20 @@ pkgs: {
       blip = callPackage ../../packages/blip { };
       fairscale = callPackage ../../packages/fairscale { };
       torch-fidelity = callPackage ../../packages/torch-fidelity { };
-      resize-right = callPackage ../../packages/resize-right { };
-      torchdiffeq = callPackage ../../packages/torchdiffeq { };
-      k-diffusion = callPackage ../../packages/k-diffusion { };
-      accelerate = callPackage ../../packages/accelerate { };
-      clip-anytorch = callPackage ../../packages/clip-anytorch { };
-      clean-fid = callPackage ../../packages/clean-fid { };
+#      resize-right = callPackage ../../packages/resize-right { };
+#      torchdiffeq = callPackage ../../packages/torchdiffeq { };
+#      k-diffusion = callPackage ../../packages/k-diffusion { };
+#      clip-anytorch = callPackage ../../packages/clip-anytorch { };
+#      clean-fid = callPackage ../../packages/clean-fid { };
       getpass-asterisk = callPackage ../../packages/getpass-asterisk { };
-      peft = callPackage ../../packages/peft { };
+#      peft = callPackage ../../packages/peft { };
       llama-cpp-python = callPackage ../../packages/llama-cpp-python { };
-      # bitsandbytes = callPackage ../../packages/bitsandbytes { };
-      lion-pytorch = callPackage ../../packages/lion-pytorch { };
+#      lion-pytorch = callPackage ../../packages/lion-pytorch { };
       flexgen = callPackage ../../packages/flexgen { };
       hf-doc-builder = callPackage ../../packages/hf-doc-builder { };
       rwkv = callPackage ../../packages/rwkv { };
+      autogptq = callPackage ../../packages/auto-gptq { };
+      rouge = callPackage ../../packages/rouge { };
     };
 
   torchRocm = final: prev: rec {
@@ -190,7 +190,17 @@ pkgs: {
   };
 
   torchCuda = final: prev: {
-    torch = final.torch-bin;
-    torchvision = final.torchvision-bin;
+     torch = pkgs.python3Packages.torchWithCuda.override { cudaPackages = pkgs.cudaPackages_11_7; };
+#    torch = pkgs.python3Packages.torchWithCuda.overrideAttrs (old: rec {
+#       pname = "torch";
+#       version = "1.13.1";
+#       src = pkgs.fetchFromGitHub {
+#         owner = "pytorch";
+#         repo = "pytorch";
+#         rev = "refs/tags/v${version}";
+#         fetchSubmodules = true;
+#         hash = "sha256-yQz+xHPw9ODRBkV9hv1th38ZmUr/fXa+K+d+cvmX3Z8=";
+#       };
+#    });
   };
 }
