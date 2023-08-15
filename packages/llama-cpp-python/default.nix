@@ -5,15 +5,15 @@ let
   llama-cpp-pin = fetchFromGitHub {
     owner = "ggerganov";
     repo = "llama.cpp";
-    rev = "2e6cd4b02549e343bef3768e6b946f999c82e823";
+    rev = "1cd06fa25eb859b14b3427a1d815a48f25fc3c34";
     hash = "sha256-VzY3e/EJ+LLx55H0wkIVoHfZ0zAShf6Y9Q3fz4xQ0V8=";
   };
 in
 buildPythonPackage rec {
   pname = "llama-cpp-python";
-  version = "0.1.54";
-
+  version = "0.1.77";
   format = "pyproject";
+  
   src = fetchFromGitHub {
     owner = "abetlen";
     repo = pname;

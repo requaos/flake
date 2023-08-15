@@ -29,13 +29,6 @@
       };
     in
     {
-      # textgen = ./nixos;
-      textgen-amd = {
-        imports = [
-          config.flake.nixosModules.textgen
-          (packageModule "textgen-amd")
-        ];
-      };
       textgen-nvidia = {
         imports = [
           config.flake.nixosModules.textgen

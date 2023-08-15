@@ -15,12 +15,12 @@
 
 buildPythonPackage rec {
   pname = "peft";
-  version = "0.2.0";
+  version = "0.4.0";
   format = "pyproject";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-zjP0hMcDgZBwW2nk0iiSMMfBgZwQhHgUg6yOEY8Kca8=";
+    hash = "sha256-52j6Itbp8yqn6JHw0G81WWAnjKTcDN2Wv/cfbwYmkgc=";
   };
 
   propagatedBuildInputs = [

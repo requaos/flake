@@ -3,6 +3,7 @@
 , fetchFromGitHub
 , safetensors
 , accelerate
+, setuptools
 , rouge
 , transformers
 , datasets
@@ -11,7 +12,7 @@
 
 buildPythonPackage rec {
   pname = "autogptq";
-  version = "0.1.0";
+  version = "0.4.1";
   format = "setuptools";
 
   BUILD_CUDA_EXT = "1";
@@ -19,12 +20,15 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "PanQiWei";
     repo = "AutoGPTQ";
-    rev = "b4eda619d0674e9ef009702cbd538836c0861a56";
-    hash = "sha256-0OO0qgG7lxKVrknwz8Oe+9iEj4YTTbWJRNNGrVdGUCQ=";
+    rev = "eea67b7e130b92605f5ace33cc93e8b95e9c12a5";
+    hash = "";
   };
 
   pythonImportsCheck = [ "auto_gptq" ];
 
+  nativeBuildInputs = [
+    setuptools
+  ];
   propagatedBuildInputs = [
     safetensors
     accelerate

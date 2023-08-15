@@ -1,6 +1,7 @@
 { lib
 , buildPythonPackage
 , fetchFromGitHub
+, setuptools
 , six
 }:
 
@@ -12,12 +13,15 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "pltrdy";
     repo = "rouge";
-    rev = version;
-    hash = "sha256-Xxq0N3mwy8+O8PrHNia9RovHS74+029Z+yhT7kdkLbk=";
+    rev = "657d4d2f61892fb6c5aaf8796e93ebd3ed88e857";
+    hash = "sha256-QlVi+LMtXOioe48W/jFGYw7hxdjQ6QR4JHMqDd7RSAA=";
   };
 
   pythonImportsCheck = [ "rouge" ];
 
+  nativeBuildInputs = [
+    setuptools
+  ];
   propagatedBuildInputs = [ six ];
 
   doCheck = false;

@@ -50,7 +50,7 @@
 
 buildPythonPackage rec {
   pname = "gradio";
-  version = "3.31.0";
+  version = "3.33.1";
   disabled = pythonOlder "3.7";
   format = "pyproject";
 
@@ -58,7 +58,7 @@ buildPythonPackage rec {
   # and its releases are also more frequent than github tags
   src = fetchPypi {
     inherit pname version;
-    sha256 = "sha256-4YIhhj64daLOfOqmzsJC8SaNym/OOwe/5fpb0BA8N90=";
+    sha256 = "sha256-55AzaSYGuUXcwryPOKPNLDoazTcIc2UhXBuwCtf3aqM=";
   };
 
   pythonRelaxDeps = [ "mdit-py-plugins" ];

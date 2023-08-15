@@ -6,7 +6,7 @@
 
 buildPythonPackage rec {
   pname = "accelerate";
-  version = "0.13.1";
+  version = "0.21.0";
 
   src = fetchPypi {
     inherit pname version;

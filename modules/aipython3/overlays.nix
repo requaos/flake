@@ -10,7 +10,7 @@ pkgs: {
       huggingface-hub =
         let
           inherit (prev.pkgs) fetchFromGitHub;
-          version = "0.14.1";
+          version = "0.15.1";
         in
         prev.huggingface-hub.overridePythonAttrs (old: {
           inherit version;
@@ -48,27 +48,29 @@ pkgs: {
         let
           inherit (prev.pkgs) fetchFromGitHub;
           pname = "transformers";
-          version = "4.28.1";
+          #version = "4.28.1";
+          revision = "0ebe7ae16076f727ac40c47f8f9167013c4596d8";
         in
         prev.transformers.overridePythonAttrs (_: {
-          inherit version;
+          #inherit version;
           src = fetchFromGitHub {
             owner = "huggingface";
             repo = pname;
-            rev = "refs/tags/v${version}";
+            #rev = "refs/tags/v${version}";
+            rev = revision;
             hash = "sha256-FmiuWfoFZjZf1/GbE6PmSkeshWWh+6nDj2u2PMSeDk0=";
           };
         });
       typing-extensions =
         let
           inherit (prev.pkgs) fetchPypi;
-          version = "4.5.0";
+          version = "4.7.1";
         in
         prev.typing-extensions.overridePythonAttrs (_: {
           src = fetchPypi {
             pname = "typing_extensions";
             inherit version;
-            hash = "sha256-XLX0p5E51plgez72IqHe2vqE4RWrACTg2cBEqUecp8s=";
+            hash = "sha256-t13cJk8LpWFdt7ohfa65lwGtKVNTxF+elZYzN87u/7I=";
           };
         });
       pytorch-lightning = relaxProtobuf prev.pytorch-lightning;
@@ -118,7 +120,9 @@ pkgs: {
       opencv-python-headless = final.opencv-python;
       opencv-python = final.opencv4;
 
-#      safetensors = callPackage ../../packages/safetensors { };
+      safetensors = callPackage ../../packages/safetensors { };
+      rouge = callPackage ../../packages/rouge { };
+      altair = callPackage ../../packages/altair { };
       compel = callPackage ../../packages/compel { };
       apispec-webframeworks = callPackage ../../packages/apispec-webframeworks { };
       pydeprecate = callPackage ../../packages/pydeprecate { };
@@ -152,45 +156,17 @@ pkgs: {
 #      clip-anytorch = callPackage ../../packages/clip-anytorch { };
 #      clean-fid = callPackage ../../packages/clean-fid { };
       getpass-asterisk = callPackage ../../packages/getpass-asterisk { };
-#      peft = callPackage ../../packages/peft { };
+      peft = callPackage ../../packages/peft { };
       llama-cpp-python = callPackage ../../packages/llama-cpp-python { };
 #      lion-pytorch = callPackage ../../packages/lion-pytorch { };
       flexgen = callPackage ../../packages/flexgen { };
       hf-doc-builder = callPackage ../../packages/hf-doc-builder { };
       rwkv = callPackage ../../packages/rwkv { };
       autogptq = callPackage ../../packages/auto-gptq { };
-      rouge = callPackage ../../packages/rouge { };
     };
 
-  torchRocm = final: prev: rec {
-    # TODO: figure out how to patch torch-bin trying to access /opt/amdgpu
-    # there might be an environment variable for it, can use a wrapper for that
-    # otherwise just grep the world for /opt/amdgpu or something and substituteInPlace the path
-    # you can run this thing without the fix by creating /opt and running nix build nixpkgs#libdrm --inputs-from . --out-link /opt/amdgpu
-    torch-bin = prev.torch-bin.overrideAttrs (old: {
-      src = pkgs.fetchurl {
-        name = "torch-1.13.1+rocm5.1.1-cp310-cp310-linux_x86_64.whl";
-        url = "https://download.pytorch.org/whl/rocm5.1.1/torch-1.13.1%2Brocm5.1.1-cp310-cp310-linux_x86_64.whl";
-        hash = "sha256-qUwAL3L9ODy9hjne8jZQRoG4BxvXXLT7cAy9RbM837A=";
-      };
-      postFixup = (old.postFixup or "") + ''
-        ${pkgs.gnused}/bin/sed -i s,/opt/amdgpu/share/libdrm/amdgpu.ids,/tmp/nix-pytorch-rocm___/amdgpu.ids,g $out/${final.python.sitePackages}/torch/lib/libdrm_amdgpu.so
-      '';
-      rocmSupport = true;
-    });
-    torchvision-bin = prev.torchvision-bin.overrideAttrs (old: {
-      src = pkgs.fetchurl {
-        name = "torchvision-0.14.1+rocm5.1.1-cp310-cp310-linux_x86_64.whl";
-        url = "https://download.pytorch.org/whl/rocm5.1.1/torchvision-0.14.1%2Brocm5.1.1-cp310-cp310-linux_x86_64.whl";
-        hash = "sha256-8CM1QZ9cZfexa+HWhG4SfA/PTGB2475dxoOtGZ3Wa2E=";
-      };
-    });
-    torch = torch-bin;
-    torchvision = torchvision-bin;
-  };
-
   torchCuda = final: prev: {
-     torch = pkgs.python3Packages.torchWithCuda.override { cudaPackages = pkgs.cudaPackages_11_7; };
+     torch = pkgs.python3Packages.torchWithCuda.override { cudaPackages = pkgs.cudaPackages_11_8; };
 #    torch = pkgs.python3Packages.torchWithCuda.overrideAttrs (old: rec {
 #       pname = "torch";
 #       version = "1.13.1";

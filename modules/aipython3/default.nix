@@ -16,12 +16,6 @@
 
       in
       {
-        aipython3-amd = mkPythonPackages [
-          overlays.fixPackages
-          overlays.extraDeps
-          overlays.torchRocm
-        ];
-
         aipython3-nvidia = mkPythonPackages [
           overlays.fixPackages
           overlays.extraDeps

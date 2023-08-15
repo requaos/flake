@@ -54,11 +54,11 @@ let
     accelerate
     (bitsandbytes.overrideAttrs (old: {
       propagatedBuildInputs = old.propagatedBuildInputs ++ (with aipython3; [ scipy ]);
-      src = pkgs.fetchFromGitHub {
+      src = fetchFromGitHub {
         owner = "TimDettmers";
         repo = "bitsandbytes";
-        rev = "0f40fa3f0a198802056e29ba183eaabc6751d565";
-        hash = "sha256-AzIACOjGjwdOZMCwLLGqIdAio4oxT9risRrqEpUQ6YQ=";
+        rev = "18e827d666fa2b70a12d539ccedc17aa51b2c97c";
+        hash = "sha256-PO2QQH05hC5kNc2zqmaKYAoVFwQcAn6ws4jzWKC9h6c=";
       };
     }))
     colorama
@@ -73,6 +73,7 @@ let
     pillow
     pyyaml
     requests
+    rouge
     rwkv
     safetensors
     sentencepiece
@@ -81,17 +82,6 @@ let
     autogptq
     torch
   ]);
-
-  # See note about consumer GPUs:
-  # https://docs.amd.com/bundle/ROCm-Deep-Learning-Guide-v5.4.3/page/Troubleshooting.html
-  rocmInit = ''
-    if [ ! -e /tmp/nix-pytorch-rocm___/amdgpu.ids ]
-    then
-        mkdir -p /tmp/nix-pytorch-rocm___
-        ln -s ${libdrm}/share/libdrm/amdgpu.ids /tmp/nix-pytorch-rocm___/amdgpu.ids
-    fi
-    export HSA_OVERRIDE_GFX_VERSION=''${HSA_OVERRIDE_GFX_VERSION-'10.3.0'}
-  '';
 in
 (writeShellScriptBin "textgen" ''
   if [ -d "/usr/lib/wsl/lib" ]
@@ -111,7 +101,6 @@ in
   ln -s ${stateDir}/cache/ ${tmpDir}/cache
   ln -s ${stateDir}/prompts/ ${tmpDir}/prompts
   ln -s ${stateDir}/characters/ ${tmpDir}/characters
-  ${lib.optionalString (aipython3.torch.rocmSupport or false) rocmInit}
   export LD_LIBRARY_PATH=/run/opengl-driver/lib:${cudaPackages.cudatoolkit}/lib
   ${textgenPython}/bin/python ${patchedSrc}/server.py $@ \
     --model-dir ${stateDir}/models/ \

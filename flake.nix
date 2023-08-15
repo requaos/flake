@@ -19,7 +19,8 @@
       flake = false;
     };
     textgen-src = {
-      url = "github:oobabooga/text-generation-webui/main";
+      # main moves pretty quick, let's pin this to a sha until we catchup
+      url = "github:oobabooga/text-generation-webui/a95e6f02cbcc88756777c2affa8b621c7fbbb525";
       flake = false;
     };
     flake-parts = {
