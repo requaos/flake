@@ -42,7 +42,7 @@
       debug = true;
       imports = [
         hercules-ci-effects.flakeModule
-        ./modules/nixpkgs-config
+#        ./modules/nixpkgs-config
         ./overlays
         ./projects/invokeai
         ./projects/koboldai

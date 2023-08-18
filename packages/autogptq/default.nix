@@ -1,26 +1,58 @@
 { lib
-, buildPythonPackage 
+, buildPythonPackage
 , fetchFromGitHub
 , safetensors
 , accelerate
 , rouge
+, peft
 , transformers
 , datasets
 , torch
+, cudaPackages
+, symlinkJoin
+, which
+, ninja
+, cudaArchList ? [ "8.6+PTX" ]
+, gcc11Stdenv
 }:
+let
+  cuda-native-redist = symlinkJoin {
+    name = "cuda-redist";
+    paths = with cudaPackages; [
+      cuda_cudart # cuda_runtime.h
+      cuda_nvcc
+    ];
+  };
+in
 
 buildPythonPackage rec {
   pname = "autogptq";
-  version = "0.1.0";
+  version = "0.3.2";
   format = "setuptools";
 
   BUILD_CUDA_EXT = "1";
 
+  CUDA_HOME = cuda-native-redist;
+  TORCH_CUDA_ARCH_LIST = "${lib.concatStringsSep ";" cudaArchList}";
+
+  buildInputs = [
+    cudaPackages.cudatoolkit
+  ];
+
+  preBuild = ''
+    export PATH=${gcc11Stdenv.cc}/bin:$PATH
+  '';
+
+  nativeBuildInputs = [
+    which
+    ninja
+  ];
+
   src = fetchFromGitHub {
     owner = "PanQiWei";
     repo = "AutoGPTQ";
-    rev = "b4eda619d0674e9ef009702cbd538836c0861a56";
-    hash = "sha256-0OO0qgG7lxKVrknwz8Oe+9iEj4YTTbWJRNNGrVdGUCQ=";
+    rev = "v${version}";
+    hash = "sha256-mWGD8+QLBNFV9eDIfCLDrW6qZuZYIXNe229jmMyayMo=";
   };
 
   pythonImportsCheck = [ "auto_gptq" ];
@@ -29,6 +61,7 @@ buildPythonPackage rec {
     safetensors
     accelerate
     rouge
+    peft
     transformers
     datasets
     torch

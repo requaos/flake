@@ -1,4 +1,4 @@
-{ aipython3
+{ python3Packages
 , lib
 , src
 , wsl ? false
@@ -50,10 +50,10 @@ let
     ln -s ${tmpDir}/prompts/ $out/prompts
     ln -s ${tmpDir}/characters/ $out/characters
   '';
-  textgenPython = aipython3.python.withPackages (_: with aipython3; [
+  textgenPython = python3Packages.python.withPackages (_: with python3Packages; [
     accelerate
     (bitsandbytes.overrideAttrs (old: {
-      propagatedBuildInputs = old.propagatedBuildInputs ++ (with aipython3; [ scipy ]);
+      propagatedBuildInputs = old.propagatedBuildInputs ++ (with python3Packages; [ scipy ]);
       src = pkgs.fetchFromGitHub {
         owner = "TimDettmers";
         repo = "bitsandbytes";
@@ -111,7 +111,7 @@ in
   ln -s ${stateDir}/cache/ ${tmpDir}/cache
   ln -s ${stateDir}/prompts/ ${tmpDir}/prompts
   ln -s ${stateDir}/characters/ ${tmpDir}/characters
-  ${lib.optionalString (aipython3.torch.rocmSupport or false) rocmInit}
+  ${lib.optionalString (python3Packages.torch.rocmSupport or false) rocmInit}
   export LD_LIBRARY_PATH=/run/opengl-driver/lib:${cudaPackages.cudatoolkit}/lib
   ${textgenPython}/bin/python ${patchedSrc}/server.py $@ \
     --model-dir ${stateDir}/models/ \

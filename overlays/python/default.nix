@@ -48,7 +48,7 @@ lib: {
 
   torchCuda = final: prev: {
     torch = prev.torch.override {
-      magma = final.pkgs.magma-cuda;
+      magma = final.pkgs.magma-cuda-static;
       cudaSupport = true;
       rocmSupport = false;
     };
